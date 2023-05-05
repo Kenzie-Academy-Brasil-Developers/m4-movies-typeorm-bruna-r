@@ -6,13 +6,16 @@ import {
   updateMovie,
 } from "../controllers/movies.controllers";
 import { ensureBodyValidMiddleware } from "../middlewares/ensureBodyValid.middleware";
-import { movieSchemaRequest } from "../schemas/movies.schema";
+import {
+  movieSchemaRequest,
+  movieSchemaRequestUpdate,
+} from "../schemas/movies.schema";
 import { ensureNameExistMiddleware } from "../middlewares/ensureNameExist.middleware";
 import { ensureIdExistMiddleware } from "../middlewares/ensureIdExist.middleware";
 
 const moviesRoutes: Router = Router();
 
-/*moviesRoutes.post(
+moviesRoutes.post(
   "",
   ensureBodyValidMiddleware(movieSchemaRequest),
   ensureNameExistMiddleware,
@@ -22,13 +25,13 @@ const moviesRoutes: Router = Router();
 moviesRoutes.get("", readMovie);
 
 moviesRoutes.patch(
-  "",
+  "/:id",
   ensureIdExistMiddleware,
-  ensureBodyValidMiddleware(movieSchemaRequest),
   ensureNameExistMiddleware,
+  ensureBodyValidMiddleware(movieSchemaRequestUpdate),
   updateMovie
 );
 
-moviesRoutes.delete("", ensureIdExistMiddleware, deleteMovie);
+moviesRoutes.delete("/:id", ensureIdExistMiddleware, deleteMovie);
 
-export { moviesRoutes };*/
+export { moviesRoutes };

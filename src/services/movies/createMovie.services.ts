@@ -1,11 +1,11 @@
 import { Repository } from "typeorm";
-import { appDataSource } from "../../data-source";
 import { TMovie, TMovieRequest } from "../../interfaces/movie.interface";
 import { Movie } from "../../entities/movie.entities";
+import { AppDataSource } from "../../data-source";
 
 const createMovieServices = async (payload: TMovieRequest): Promise<TMovie> => {
   const movieRepository: Repository<TMovie> =
-    appDataSource.getRepository(Movie);
+    AppDataSource.getRepository(Movie);
 
   const newMovie: TMovie = movieRepository.create(payload);
   await movieRepository.save(newMovie);

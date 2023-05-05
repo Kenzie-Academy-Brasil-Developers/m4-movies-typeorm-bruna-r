@@ -1,7 +1,7 @@
 import { NextFunction, Request, Response } from "express";
 import { Repository } from "typeorm";
 import { TMovie } from "../interfaces/movie.interface";
-import { appDataSource } from "../data-source";
+import { AppDataSource } from "../data-source";
 import { Movie } from "../entities/movie.entities";
 import { AppError } from "../error";
 
@@ -13,17 +13,17 @@ const ensureIdExistMiddleware = async (
   const payload: number = parseInt(req.params.id);
 
   const movieRepository: Repository<TMovie> =
-    appDataSource.getRepository(Movie);
+    AppDataSource.getRepository(Movie);
 
-  const idMovie = await movieRepository.findOne({
-    where: {
-      id: payload,
-    },
+  const idMovie = await movieRepository.findOneBy({
+    id: payload,
   });
 
-  if (idMovie) {
+  if (!idMovie) {
     throw new AppError("Movie not found", 404);
   }
+
+  res.locals.movie = idMovie;
 
   next();
 };

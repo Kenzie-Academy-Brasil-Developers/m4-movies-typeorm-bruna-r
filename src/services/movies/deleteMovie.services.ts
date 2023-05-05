@@ -1,13 +1,15 @@
 import { Repository } from "typeorm";
 import { TMovie } from "../../interfaces/movie.interface";
-import { appDataSource } from "../../data-source";
+import { AppDataSource } from "../../data-source";
 import { Movie } from "../../entities/movie.entities";
 
-const deleteMovieServices = async (idMovie): Promise<void> => {
+const deleteMovieServices = async (movie: TMovie): Promise<void> => {
   const movieRepository: Repository<TMovie> =
-    appDataSource.getRepository(Movie);
+    AppDataSource.getRepository(Movie);
 
-  const movie = movieRepository.findOneBy(idMovie);
+  await movieRepository.remove(movie);
+
+  return;
 };
 
 export { deleteMovieServices };

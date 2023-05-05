@@ -1,40 +1,66 @@
-import { Response } from "express";
 import { Repository } from "typeorm";
-import { TMovie } from "../../interfaces/movie.interface";
-import { appDataSource } from "../../data-source";
+import { TMovie, TMovies } from "../../interfaces/movie.interface";
+import { AppDataSource } from "../../data-source";
 import { Movie } from "../../entities";
+import { moviesSchema } from "../../schemas/movies.schema";
 
 const readMovieServices = async (
   page: number | undefined,
   perPage: number | undefined,
   sort: string | undefined,
-  order: string | undefined
-): Promise<TMovie> => {
+  orde: string | undefined
+) => {
   const movieRepository: Repository<TMovie> =
-    appDataSource.getRepository(Movie);
+    AppDataSource.getRepository(Movie);
 
   let movies: TMovie[] | undefined;
+  const take: number = perPage || 5;
+  const skip: number = page || 1;
 
-  const orderBy = sort;
-  let orderObj = {};
-  if (orderBy) {
-    orderObj = {
-      orderBy: order,
-    };
-  }
-
-  if (page && perPage) {
+  if (sort == "price")
     movies = await movieRepository.find({
-      skip: (page - 1) * perPage,
-      take: perPage,
-      order: orderObj,
+      skip: (skip - 1) * take,
+      take: take,
+      order: { price: "asc" },
+    });
+
+  if (sort == "price" && orde == "desc")
+    movies = await movieRepository.find({
+      skip: (skip - 1) * take,
+      take: take,
+      order: { price: "desc" },
+    });
+
+  if (sort == "duration")
+    movies = await movieRepository.find({
+      skip: (skip - 1) * take,
+      take: take,
+      order: { duration: "asc" },
+    });
+
+  if (sort == "duration" && orde == "desc")
+    movies = await movieRepository.find({
+      skip: (skip - 1) * take,
+      take: take,
+      order: { duration: "desc" },
+    });
+
+  if (!sort) {
+    movies = await movieRepository.find({
+      skip: (skip - 1) * take,
+      take: take,
+      order: { id: "asc" },
     });
   }
 
+  console.log(movies);
+  const listMovies: TMovies = moviesSchema.parse(movies);
+
   return {
-    page: page || null,
-    perPage: perPage || null,
-    data: movies,
+    prevPage: `http://localhost:3000/movies?page=${skip - 1}&perPage=3`,
+    nextPage: `http://localhost:3000/movies?page=${skip + 1}&perPage=3`,
+    count: 20,
+    data: listMovies,
   };
 };
 

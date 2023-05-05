@@ -4,8 +4,8 @@ import path from "path";
 import "dotenv/config";
 
 const DataSourceConfig = (): DataSourceOptions => {
-  const entitespath = path.join(__dirname, "./entities/**.{js, ts}");
-  const migrationspath = path.join(__dirname, "./migrations/**.{js, ts}");
+  const entitespath = path.join(__dirname, "./entities/**.{js,ts}");
+  const migrationspath = path.join(__dirname, "./migrations/**.{js,ts}");
 
   if (process.env.NODE_ENV === "TEST") {
     return {
@@ -31,4 +31,4 @@ const DataSourceConfig = (): DataSourceOptions => {
 
 const AppDataSource: DataSource = new DataSource(DataSourceConfig());
 
-export default AppDataSource;
+export { AppDataSource };
