@@ -2,7 +2,6 @@ import { Repository } from "typeorm";
 import { TMovie, TMovies } from "../../interfaces/movie.interface";
 import { AppDataSource } from "../../data-source";
 import { Movie } from "../../entities";
-import { moviesSchema } from "../../schemas/movies.schema";
 
 const readMovieServices = async (
   page: number | undefined,
@@ -13,54 +12,75 @@ const readMovieServices = async (
   const movieRepository: Repository<TMovie> =
     AppDataSource.getRepository(Movie);
 
-  let movies: TMovie[] | undefined;
-  const take: number = perPage || 5;
-  const skip: number = page || 1;
+  let data: TMovie[] | undefined;
+  let count: number | undefined;
+  let take: number = perPage || 5;
+  let skip: number = page || 1;
 
-  if (sort == "price")
-    movies = await movieRepository.find({
+  if (skip < 1) {
+    skip = 1;
+  }
+
+  if (take < 1 || take > 5) {
+    take = 5;
+  }
+
+  if (sort == "price") {
+    [data, count] = await movieRepository.findAndCount({
       skip: (skip - 1) * take,
       take: take,
       order: { price: "asc" },
     });
+  }
 
-  if (sort == "price" && orde == "desc")
-    movies = await movieRepository.find({
+  if (sort == "price" && orde == "desc") {
+    [data, count] = await movieRepository.findAndCount({
       skip: (skip - 1) * take,
       take: take,
       order: { price: "desc" },
     });
+  }
 
-  if (sort == "duration")
-    movies = await movieRepository.find({
+  if (sort == "duration") {
+    [data, count] = await movieRepository.findAndCount({
       skip: (skip - 1) * take,
       take: take,
       order: { duration: "asc" },
     });
+  }
 
-  if (sort == "duration" && orde == "desc")
-    movies = await movieRepository.find({
+  if (sort == "duration" && orde == "desc") {
+    [data, count] = await movieRepository.findAndCount({
       skip: (skip - 1) * take,
       take: take,
       order: { duration: "desc" },
     });
+  }
 
   if (!sort) {
-    movies = await movieRepository.find({
+    [data, count] = await movieRepository.findAndCount({
       skip: (skip - 1) * take,
       take: take,
       order: { id: "asc" },
     });
   }
 
-  console.log(movies);
-  const listMovies: TMovies = moviesSchema.parse(movies);
+  let prevPage = null;
+  let nextPage = null;
+
+  if (skip > 1) {
+    prevPage = `http://localhost:3000/movies?page=${skip - 1}&perPage=${take}`;
+  }
+
+  if (count! > skip * take) {
+    nextPage = `http://localhost:3000/movies?page=${skip + 1}&perPage=${take}`;
+  }
 
   return {
-    prevPage: `http://localhost:3000/movies?page=${skip - 1}&perPage=3`,
-    nextPage: `http://localhost:3000/movies?page=${skip + 1}&perPage=3`,
-    count: 20,
-    data: listMovies,
+    prevPage: prevPage,
+    nextPage: nextPage,
+    count: count,
+    data,
   };
 };
 

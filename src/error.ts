@@ -28,12 +28,12 @@ const HandleErros = (
     });
   }
 
-  if (err instanceof TypeError) {
+  /*if (err instanceof TypeError) {
     console.log(err);
     return res.status(400).json({
       message: err.message,
     });
-  }
+  }*/
   console.log(err);
 
   return res.status(500).json({

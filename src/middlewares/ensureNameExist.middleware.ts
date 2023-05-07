@@ -11,6 +11,9 @@ const ensureNameExistMiddleware = async (
   next: NextFunction
 ) => {
   const payload: string = req.body.name;
+  if (!payload) {
+    return next();
+  }
 
   const movieRepository: Repository<TMovie> =
     AppDataSource.getRepository(Movie);

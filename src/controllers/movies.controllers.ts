@@ -27,12 +27,8 @@ const readMovie = async (req: Request, res: Response): Promise<Response> => {
   const sort: string | undefined = req.query.sort?.toString();
   const order: string | undefined = req.query.order?.toString();
 
-  const movies: TMoviePagination = await readMovieServices(
-    page,
-    perPage,
-    sort,
-    order
-  );
+  const movies: any = await readMovieServices(page, perPage, sort, order);
+  console.log(movies);
 
   return res.status(200).json(movies);
 };
